@@ -3,12 +3,14 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import ContentTransformer from 'ui/content-transformer';
 
-import { Body, responsive } from 'ui';
+import { responsive } from 'ui';
 
 import ParagraphCollection from './paragraph-collection';
 import PropertiesTable from './properties-table';
 import Images from './images';
 import Videos from './videos';
+import ItemRelations from './item-relations';
+import GridRelations from './grid-relations';
 
 const ContentOuter = styled.div`
   margin: 1em var(--content-padding);
@@ -24,7 +26,7 @@ const ShapeComponents = ({ components, overrides }) => {
   }
 
   return (
-    <Body>
+    <div>
       {components
         .filter((component) => component.content != null)
         .map(({ type, ...component }, index) => {
@@ -94,12 +96,24 @@ const ShapeComponents = ({ components, overrides }) => {
             );
           }
 
-          // eslint-disable-next-line no-console
-          console.log(`Render for ${type} not implemented`);
+          if (type === 'itemRelations') {
+            Component = Component || ItemRelations;
+            return <Component key={key} items={component.content.items} />;
+          }
+
+          if (type === 'gridRelations') {
+            Component = Component || GridRelations;
+
+            return <Component key={key} grids={component.content.grids} />;
+          }
+
+          if (process.env.NODE_ENV !== 'production') {
+            console.log(`Render for ${type} not implemented`);
+          }
 
           return <span key={key} />;
         })}
-    </Body>
+    </div>
   );
 };
 
